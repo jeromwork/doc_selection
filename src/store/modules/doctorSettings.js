@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import { DOC_SELECTION_CONNENTOR_URL } from '/src/api/api_config.js';
 
 export default {
   namespaced:true,
@@ -36,24 +36,16 @@ export default {
     },
   },
   actions:{
-
-    async GET_DOCTORS_AJAX({state}){
-
+    async GET_INITIAL_SETTINGS(){
       let qdata = {
         action:  'doctors/get',
         cors_key : '8cbd6a0c2e767862b02887a446bb34ca',
-        include_fields : {doc__id:'value', doc__fullname:'text'},
-        length : 1000,
-      };
-      // console.log(qdata);
-      // console.log(state);
+              };
       axios
-          .post(state.iservices_connector_url, qdata)
+          .post(DOC_SELECTION_CONNENTOR_URL, qdata)
           .then(response => {this.info = response
-
             console.log(response.data);
             this.commit('doctorSettings/SET_LIST_DOCTORS', response.data.data);
-            //
           }).catch(error => console.log(error+'error'));
     },
     async GET_DOCTOR_SETTINGS_AJAX({getters, state}){
@@ -66,7 +58,7 @@ export default {
 
       axios
 
-          .post(state.iservices_connector_url, formData)
+          .post(state.doc_selection_connector_url, formData)
           .then(response => {this.info = response
 
             //console.log(response);
@@ -82,7 +74,7 @@ export default {
         id:getters.currentDoctorId};
       axios
 
-          .post(state.iservices_connector_url, qdata)
+          .post(state.doc_selection_connector_url, qdata)
           .then(response => {this.info = response
 
             //this.commit('doctorSettings/FILL_DOCTOR_SETTINGS_DATA', response.data);
@@ -106,7 +98,6 @@ export default {
     }
   },
   state: {
-    iservices_connector_url:(window.location.host === 'http://localhost:8080/')? '/assets/components/eastclinic/iservices/connector.php': 'http://dev.eastclinic.local/assets/components/eastclinic/iservices/connector.php',
     doctorSettings: {},
     doctors:[
       {id:0, name:'Выберите доктора'}
