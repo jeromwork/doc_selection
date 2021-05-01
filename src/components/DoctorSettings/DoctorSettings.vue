@@ -23,9 +23,11 @@
 
 
 
+
+
                                 <v-select
                                         class="pa-2"
-                                        v-model="doctorSettings.doc__child"
+                                        v-model="doctorSettings"
                                         :items="listChildAges"
                                         label="темперамент"
                                         :outlined="true"
@@ -176,8 +178,8 @@
 
         },
         created(){
-            //console.log('created');
-            this.$store.dispatch('doctorSettings/GET_DOCTORS_AJAX', {limit:10});
+            console.log('created');
+            this.$store.dispatch('doctorSettings/GET_INITIAL_SETTINGS');
 
         },
 
@@ -185,7 +187,6 @@
             //====================================================================
             ...mapGetters({
                 getDoctors:'doctorSettings/getDoctors'
-                ,getChildAges:'doctorSettings/getArrChildAges'
                 ,getArrLevels:'doctorSettings/getArrLevels'
                 //,currentDoctorId:'doctorSettings/currentDoctorId'
                 ,tagsSelected:'doctorSettings/tagsSelected'

@@ -60,7 +60,6 @@
 
         },
         data: () => ({
-            // iservices_connector_url:,
             items: [],
             select:[],
             info:{},
