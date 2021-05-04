@@ -19,89 +19,85 @@
                         <v-row no-gutters >
                             <v-col cols="12"
                                    sm="12"
-                                   md="4">
-
-
-
-
+                                   md="4"
+                                   v-for="group in arrGroupTags" :key="group.id"
+                            >
 
                                 <v-select
+                                        v-if="group.type*1 == 3"
                                         class="pa-2"
-                                        v-model="doctorSettings"
-                                        :items="listChildAges"
-                                        label="темперамент"
+                                        :items="group.tags"
+                                        item-value="id"
+                                        :label="group.title"
                                         :outlined="true"
+                                        @change="setFilter($event, group.name)"
                                 ></v-select>
-
-                            </v-col>
-                            <v-col cols="12"
-                                   sm="12"
-                                   md="4">
-                                <v-text-field
+                                <v-autocomplete
+                                        v-else-if="group.type*1 == 4"
                                         class="pa-2"
-                                        v-model="doctorSettings.doc__name"
-                                        label="Имя"
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="12"
-                                   sm="12"
-                                   md="4">
-                                <v-text-field
-                                        class="pa-2"
-                                        v-model="doctorSettings.doc__middlename"
-                                        label="Отчество"
-                                ></v-text-field>
-                            </v-col>
+                                        hide-selected
+                                        multiple
+                                        outlined
+                                        small-chips
+                                        :items="group.tags"
+                                        item-value="id"
+                                        :deletable-chips="true"
+                                        :auto-select-first="true"
+                                        :search-input.sync="searchInput"
+                                        :menu-props="{ offsetY: true, }"
+                                        :hide-no-data="true"
+                                        :label="group.title"
+                                        @change="setFilter($event, group.name)"
+                                ></v-autocomplete>
 
-                        </v-row>
-
-                        <v-row no-gutters >
-                            <v-col cols="12"
-                                   sm="12"
-                                   md="4">
-
-                                <v-switch
-                                        v-model="doctorSettings.doc__off"
-                                        :label="'Доктор отключен'"
-                                        :false-value="`0`"
-                                        :true-value="`1`"
-                                        :disabled="!doctorSettings.doc__off"
-                                >
-
-                                </v-switch>
-                            </v-col>
-                            <v-col cols="12"
-                                   sm="12"
-                                   md="4">
-                                <v-switch
-                                        v-model="doctorSettings.doc__holiday"
-                                        :label="'Доктор в отпуске'"
-                                        :false-value="`0`"
-                                        :true-value="`1`"
-                                        :disabled="!doctorSettings.doc__holiday"
-                                >
-
-                                </v-switch>
-                            </v-col>
-                            <v-col cols="12"
-                                   sm="12"
-                                   md="4">
-                                <v-switch
-                                        v-model="doctorSettings.doc__show_experience"
-                                        :label="'Показывать опыт'"
-                                        :false-value="`0`"
-                                        :true-value="`1`"
-                                        :disabled="!doctorSettings.doc__show_experience"
-
-                                >
-
-                                </v-switch>
                             </v-col>
 
                         </v-row>
 
 
                     </v-form>
+                </v-card-text>
+            </v-card>
+        </v-col>
+
+
+        <v-col cols="12"
+               sm="12"
+               md="12">
+            <v-card
+                    elevation="8"
+                    outlined
+            >
+                <v-card-text>
+                    <v-row>
+                        <v-col
+                                v-for="(clinic, index) in filialsDoctors" :key="index"
+                                cols="12"
+                               sm="12"
+                               md="3">
+                            <v-card
+                                    v-if="clinic.length > 0"
+                                    elevation="8"
+                                    outlined
+                            >
+                                <v-card-title>{{getFilial(index)}}</v-card-title>
+                                <v-card-text>
+                                    <v-list>
+
+                                        <v-list-item
+                                                v-for="(doc, di) in clinic" :key="di"
+                                                link>
+                                            <v-list-item-content>
+                                                <v-list-item-content>
+                                                    {{getDoctor(doc.id)}}
+                                                </v-list-item-content>
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
                 </v-card-text>
             </v-card>
         </v-col>
@@ -131,10 +127,7 @@
 
 
     import { mapGetters , mapMutations , mapState} from "vuex";
-
     export default {
-
-
         name: 'doctorSettings',
 
         props: {
@@ -144,21 +137,11 @@
             }
         },
         components: {
-
         },
         data: () => ({
             valid2: true,
             valid: true,
-            name: '',
-            nameRules: [
-                v => !!v || 'Name is required',
-                v => (v && v.length <= 10) || 'Имя не должно быть более 10 символов',
-            ],
-            email: '',
-            emailRules: [
-                v => !!v || 'E-mail is required',
-                v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-            ],
+            searchInput:null,
             select: null,
             items: [
                 'Item 1',
@@ -173,44 +156,52 @@
         }),
 
         methods: {
-            validate () {
-                this.$refs.form.validate()
-            },
-            reset () {
-                this.$refs.form.reset()
-            },
-            SET_TAGS (e, name) {
-                //console.log(e);
-               //console.log(name);
-                this.$store.commit('doctorSettings/SET_DOCTOR_TAGS', {name:name, data:e});
-               // this.$refs.form.resetValidation()
-            },
-            onSaveDoctorData(){
-                //console.log(this.$refs.form);//забываем jquery. Здесь не нужно брать данные формы. Они храняться в data
-                this.$store.dispatch('doctorSettings/SAVE_DOCTOR_SETTINGS_AJAX');
-            },
             tags(t){
                 //console.log(t);
                 return this.$store.getters["doctorSettings/tagsSelected"](t);
-                //
-                //return this.getChildAges();
-                //return this.$store.getters["doctorSettings/tagsSelected"];
+            },
+            setFilter(e, name){
+                //console.log(e);
+                this.$store.commit('doctorSettings/SET_FILTERS', {name:name, data:e});
+            },
+            getFilial(id){
+                //console.log(id);
+                let filials = this.$store.getters["doctorSettings/getFilials"];
+                if(filials[id] && filials[id]['title']){
+                    return filials[id]['title'];
+                }else{
+                    console.log('неправильная структура данных для филиала');
+                    return '';
+                }
+            },
+            getDoctor(id){
+                //console.log(id);
+                let doctors = this.$store.getters["doctorSettings/getDoctors"];
+                if(doctors[id] && doctors[id]['surname']){
+                    return doctors[id]['surname'];
+                }else{
+                    console.log('неправильная структура данных для доктора');
+                    return '';
+                }
             },
 
         },
         created(){
             console.log('created');
             this.$store.dispatch('doctorSettings/GET_INITIAL_SETTINGS');
-
+            this.$store.dispatch('doctorSettings/GET_FILTERED_DOCTORS');
         },
 
         computed:{
             //====================================================================
             ...mapGetters({
                 getDoctors:'doctorSettings/getDoctors'
+                ,getFilials:'doctorSettings/getFilials'
                 ,getArrLevels:'doctorSettings/getArrLevels'
                 //,currentDoctorId:'doctorSettings/currentDoctorId'
                 ,tagsSelected:'doctorSettings/tagsSelected'
+                ,getArrGroupTags:'doctorSettings/getArrGroupTags'
+                ,getFilialsDoctors:'doctorSettings/getFilialsDoctors'
             }),
 
             ...mapState({currentDoctorId:'doctorSettings/currentDoctorId'}),
@@ -232,34 +223,28 @@
                     this.$store.dispatch('doctorSettings/GET_DOCTOR_SETTINGS_AJAX');
                 },
             },
-            doctorSettings:{
-                get(){        //console.log(this);
-                    return this.$store.getters["doctorSettings/doctorSettings"];
-                },
-                set(val){
-
-                    console.log(val);
-                    //this.SET_CURRENT_DOCTOR_ID(val);
-                    //this.$store.commit('doctorSettings/SET_CURRENT_DOCTOR_ID', val);
-                    //this.$store.dispatch('doctorSettings/GET_DOCTOR_SETTINGS_AJAX');
+            arrGroupTags : {
+                get(){
+                    console.log(this.getArrGroupTags);
+                    return this.getArrGroupTags;
                 },
             },
-
-            doctorSettings2:{
-                get(){        //console.log(this);
-                    return this.$store.getters["doctorSettings/doctorSettings"];
-                },
-                set(val){
-
-                    console.log(val);
-                    //this.SET_CURRENT_DOCTOR_ID(val);
-                    //this.$store.commit('doctorSettings/SET_CURRENT_DOCTOR_ID', val);
-                    //this.$store.dispatch('doctorSettings/GET_DOCTOR_SETTINGS_AJAX');
+            filialsDoctors : {
+                get(){
+                    //console.log(this.getArrGroupTags);
+                    return this.getFilialsDoctors;
                 },
             },
-            listDoctors(){                return this.getDoctors;                },
-            listChildAges(){                return this.getChildAges;                }
-
+            doctors : {
+                get(){
+                    return this.getDoctors;
+                },
+            },
+            filials : {
+                get(){
+                    return this.getFilials;
+                },
+            },
         }
 
 
