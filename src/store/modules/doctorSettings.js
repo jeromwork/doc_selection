@@ -18,7 +18,7 @@ export default {
       items.forEach(function(item) {
         state.filials[item.id*1] = item;
       });
-      console.log(state.filials);
+      //console.log(state.filials);
     },
     SET_FILIALS_DOCTORS(state, data) {
       state.filialsDoctors = data;
@@ -32,11 +32,12 @@ export default {
       state.doctors = doctors;
     },
     SET_FILTERS(state, tags =[]){
-      state.arrFilter[tags.name] = tags.data ;
-      //console.log(state.arrFilter);
+      if(!tags.data || (Array.isArray(tags.data) && tags.data.length === 0)){
+        delete state.arrFilter[tags.name];
+      }else{
+        state.arrFilter[tags.name] = tags.data ;
+      }
       this.dispatch('doctorSettings/GET_FILTERED_DOCTORS', state);
-
-
     },
   },
   actions:{
@@ -73,7 +74,7 @@ export default {
       axios
           .post(DOC_SELECTION_CONNENTOR_URL, qdata)
           .then(response => {this.info = response
-            console.log(response.data.data);
+            //console.log(response.data.data);
             this.commit('doctorSettings/SET_FILIALS_DOCTORS', response.data.data);
           }).catch(error => console.log(error+'error'));
     },

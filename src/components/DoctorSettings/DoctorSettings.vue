@@ -19,18 +19,20 @@
                         <v-row no-gutters >
                             <v-col cols="12"
                                    sm="12"
-                                   md="4"
+                                   md="3"
                                    v-for="group in arrGroupTags" :key="group.id"
                             >
 
                                 <v-select
-                                        v-if="group.type*1 == 3"
+                                        v-if="group.type*1 == 3 || group.type*1 == 5"
                                         class="pa-2"
                                         :items="group.tags"
                                         item-value="id"
                                         :label="group.title"
                                         :outlined="true"
                                         @change="setFilter($event, group.name)"
+                                        :clearable="true"
+                                        @click:clear="setFilter($event, group.name)"
                                 ></v-select>
                                 <v-autocomplete
                                         v-else-if="group.type*1 == 4"
@@ -48,6 +50,30 @@
                                         :hide-no-data="true"
                                         :label="group.title"
                                         @change="setFilter($event, group.name)"
+                                        :clearable="true"
+                                ></v-autocomplete>
+
+                            </v-col>
+
+                            <v-col cols="12"
+                                   sm="12"
+                                   md="12"
+
+                            >
+                                <v-autocomplete
+                                        class="pa-2"
+                                        hide-selected
+                                        multiple
+                                        outlined
+                                        small-chips
+                                        :items="filials"
+                                        :deletable-chips="true"
+                                        :auto-select-first="true"
+                                        :search-input.sync="searchInput"
+                                        :menu-props="{ offsetY: true, }"
+                                        :hide-no-data="true"
+                                        label="Клиники"
+                                        @change="setFilter($event, 'filials')"
                                 ></v-autocomplete>
 
                             </v-col>
@@ -79,21 +105,44 @@
                                     v-if="clinic.length > 0"
                                     elevation="8"
                                     outlined
+                                    height="450px" class="scroll overflow-y-auto"
+
+
                             >
                                 <v-card-title>{{getFilial(index)}}</v-card-title>
                                 <v-card-text>
-                                    <v-list>
+                                    <v-list >
 
-                                        <v-list-item
-                                                v-for="(doc, di) in clinic" :key="di"
-                                                link>
-                                            <v-list-item-content>
-                                                <v-list-item-content>
-                                                    {{getDoctor(doc.id)}}
-                                                </v-list-item-content>
-                                            </v-list-item-content>
+                                        <v-list-item link
+                                        v-for="(doc, doc_id) in clinic" :key="doc_id"
+                                        >
+                                            <v-list-item-subtitle>
+
+                                                    {{getDoctorName(doc.id)}}
+                                            </v-list-item-subtitle>
+
+                                            <v-list-item-icon
+                                            v-if="doc.level>0"
+                                            >
+
+                                                <v-btn
+                                                        class="ma-2"
+                                                        color="#009B95"
+                                                        dark
+                                                        small
+                                                >
+                                                    <v-icon
+                                                        small
+                                                        v-text="doc.level">
+
+                                                    </v-icon>
+                                                </v-btn>
+                                            </v-list-item-icon>
+
                                         </v-list-item>
                                     </v-list>
+
+
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -174,11 +223,11 @@
                     return '';
                 }
             },
-            getDoctor(id){
+            getDoctorName(id){
                 //console.log(id);
                 let doctors = this.$store.getters["doctorSettings/getDoctors"];
                 if(doctors[id] && doctors[id]['surname']){
-                    return doctors[id]['surname'];
+                    return doctors[id]['surname'] + ' ' + doctors[id]['name'][0] + '. ' + doctors[id]['middlename'][0]+ '.';
                 }else{
                     console.log('неправильная структура данных для доктора');
                     return '';
@@ -242,7 +291,12 @@
             },
             filials : {
                 get(){
-                    return this.getFilials;
+                    let listFilials = [];
+                    for (let i in this.getFilials) {
+                        listFilials.push({value:this.getFilials[i]['id']*1, text:this.getFilials[i]['title']});
+                    }
+                    //console.log(listFilials)
+                    return listFilials;
                 },
             },
         }
