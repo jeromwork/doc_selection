@@ -70,7 +70,8 @@ export default {
             //console.log(id);
             let doctors = this.$store.getters["docSelection/getDoctors"];
             if(doctors[id] && doctors[id]['surname']){
-                return doctors[id]['surname'] + ' ' + doctors[id]['name'][0] + '. ' + doctors[id]['middlename'][0]+ '.';
+                let mname = (doctors[id]['middlename'][0]) ? doctors[id]['middlename'][0] : '';
+                return doctors[id]['surname'] + ' ' + doctors[id]['name'][0] + '. ' + mname + '.';
             }else{
                 console.log('неправильная структура данных для доктора');
                 return '';

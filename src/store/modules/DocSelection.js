@@ -45,7 +45,7 @@ export default {
       axios
           .post(DOC_SELECTION_CONNENTOR_URL, qdata)
           .then(response => {this.info = response
-            console.log(response.data);
+            //console.log(response.data);
             if(response.data.group_tags){
               this.commit('docSelection/SET_TAGS', response.data.group_tags);
             }
@@ -87,7 +87,7 @@ export default {
     getFilials: state => {        return state.filials;      },
     getFilter: state => {        return state.arrFilter;      },
     docSelection: state => {        return state.docSelection ;      },
-    getArrGroupTags: state => {        return state.arrGroupTags ;      },
+    getArrGroupTags: state => {       console.log(state.arrGroupTags); return state.arrGroupTags ;      },
     getFilialsDoctors: state => {        return state.filialsDoctors ;      },
   },
 

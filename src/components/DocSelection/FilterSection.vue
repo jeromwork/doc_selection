@@ -34,8 +34,20 @@
                     :clearable="true"
             ></v-autocomplete>
 
-        </v-col>
 
+        </v-col>
+        <v-col cols="12"
+               sm="12"
+               md="3"
+
+        >
+            <v-text-field
+                    class="pa-2"
+                    label="Возраст пациента"
+                    outlined
+                    @change="setFilter($event, 'age')"
+            ></v-text-field>
+        </v-col>
         <v-col cols="12"
                sm="12"
                md="12"
