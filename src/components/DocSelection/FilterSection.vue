@@ -3,6 +3,20 @@
         <v-col cols="12"
                sm="12"
                md="3"
+
+        >
+            <v-text-field
+                    class="pa-2"
+                    label="Возраст пациента"
+                    outlined
+                    :rules="[ageRule]"
+                    :clearable="true"
+                    @change="setFilter($event, 'age')"
+            ></v-text-field>
+        </v-col>
+        <v-col cols="12"
+               sm="12"
+               md="3"
                v-for="group in arrGroupTags" :key="group.id"
         >
             <v-select
@@ -36,38 +50,7 @@
 
 
         </v-col>
-        <v-col cols="12"
-               sm="12"
-               md="3"
 
-        >
-            <v-text-field
-                    class="pa-2"
-                    label="Возраст пациента"
-                    outlined
-                    @change="setFilter($event, 'age')"
-            ></v-text-field>
-        </v-col>
-        <v-col cols="12"
-               sm="12"
-               md="12"
-
-        >
-            <v-autocomplete
-                    class="pa-2"
-                    hide-selected
-                    multiple
-                    outlined
-                    small-chips
-                    :items="filials"
-                    :deletable-chips="true"
-                    :auto-select-first="true"
-                    :menu-props="{ offsetY: true, }"
-                    :hide-no-data="true"
-                    label="Клиники"
-                    @change="setFilter($event, 'filials')"
-            ></v-autocomplete>
-        </v-col>
     </v-row>
 </template>
 
@@ -76,6 +59,15 @@ import {mapGetters} from "vuex";
 
 export default {
     name: 'FilterSection',
+    data: function (){return {
+        ageRule: v  => {
+            if (!v.trim()) return true;
+            if (!isNaN(parseFloat(v)) && v >= 0 && v <= 100) return true;
+            return 'Число от 0 до 100';
+        },
+
+
+    }},
     methods: {
         setFilter(e, name) {
             this.$store.commit('docSelection/SET_FILTERS', {name: name, data: e});
@@ -90,6 +82,7 @@ export default {
 
         arrGroupTags : {
             get(){
+
                 return this.getArrGroupTags;
             },
         },

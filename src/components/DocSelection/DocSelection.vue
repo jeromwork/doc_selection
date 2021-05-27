@@ -72,6 +72,7 @@
         },
         created(){
             //console.log(window.location.hostname);
+
             this.$store.dispatch('docSelection/GET_INITIAL_SETTINGS');
             this.$store.dispatch('docSelection/GET_FILTERED_DOCTORS');
         },
