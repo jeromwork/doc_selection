@@ -2,14 +2,14 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 
-import doctorSettings from './modules/doctorSettings'
+import docSelection from './modules/DocSelection'
 Vue.use(Vuex)
 
 
 
 export default new Vuex.Store({
   modules: {
-      doctorSettings,
+      docSelection,
   }
 })
 // window._ = require('lodash');

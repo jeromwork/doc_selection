@@ -1,3 +1,3 @@
-export default {
-    iservices_connector_url:window.location.host+'/assets/components/eastclinic/iservices/connector.php'
-}
+
+export const DOC_SELECTION_CONNENTOR_URL = ( window.location.hostname !== 'localhost') ? '/assets/components/eastclinic/doc_selection/connector.php' : 'http://dev.eastclinic.local/assets/components/eastclinic/doc_selection/connector.php';
+

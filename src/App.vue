@@ -1,9 +1,10 @@
 <template>
   <v-app>
+
     <v-main>
       <v-container class="grey lighten-5">
 
-        <DoctorSettings/>
+        <DocSelection/>
 
 
       </v-container>
@@ -13,13 +14,14 @@
 </template>
 
 <script>
-  import DoctorSettings from './components/DoctorSettings/DoctorSettings'
+  import DocSelection from './components/DocSelection/DocSelection'
+
 
 export default {
   name: 'App',
 
   components: {
-    DoctorSettings,
+    DocSelection
   },
 
   data: () => ({
